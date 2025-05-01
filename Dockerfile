@@ -1,7 +1,18 @@
-# Етап 2: Запуск
-FROM eclipse-temurin:21-jre-jammy
-ENV JAVA_OPTS="-Xmx512m -Xms256m"
+# Використовуємо образ Maven з вбудованим JDK
+FROM maven:3.9.4-eclipse-temurin-21
+
+# Встановлюємо робочу директорію для збірки
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Dserver.port=${PORT} -jar app.jar"]
+
+# Копіюємо файли проєкту
+COPY pom.xml .
+COPY src ./src
+
+# Збірка проєкту Maven
+RUN mvn clean install -DskipTests
+
+# Етап виконання (новий образ для меншого розміру)
+FROM eclipse-temurin:21-jre-jammy
+WORKDIR /app
+COPY --from=0 /app/target/*.jar app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]
