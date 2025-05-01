@@ -1,5 +1,5 @@
 # Використовуємо базовий образ Java (OpenJDK)
-FROM eclipse-temurin:21-jre-focal
+FROM eclipse-temurin:21-jdk-focal
 
 # Встановлюємо робочу директорію в контейнері
 WORKDIR /app
